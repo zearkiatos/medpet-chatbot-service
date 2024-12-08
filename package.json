@@ -1,0 +1,20 @@
+{
+  "name": "medpet-chatbot-service",
+  "version": "1.0.0",
+  "description": "This is a service to integrate whatsapp service ✆ to automate chatbot 💬🤖 messages. This service is MedPet for vet for your pets 🐕🐈🦜🩺🏥",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Pedro Capriles <caprilespe@outlook.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
