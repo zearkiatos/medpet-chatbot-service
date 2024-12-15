@@ -1,15 +1,32 @@
-FROM node:22-alpine
+FROM node:22-alpine AS build
 
-RUN apk update
-RUN apk add python3 make g++
-RUN apk add --update nodejs npm
+WORKDIR /usr/src/app
 
-WORKDIR /app
-
-COPY . .
-
-EXPOSE 3000
+COPY package*.json ./
 
 RUN npm install
 
-ENTRYPOINT [ "sh", "docker/entrypoint.sh" ]
+COPY . .
+
+RUN npm install -g pm2
+
+RUN npm run build
+
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+RUN npm install -g pm2
+
+COPY --from=build /usr/src/app/package*.json ./
+COPY --from=build /usr/src/app/dist/ ./
+
+RUN npm install
+
+COPY ./docker/nginx.conf /etc/nginx/nginx.conf
+
+RUN apk add --no-cache nginx
+
+EXPOSE 80
+
+CMD ["sh", "-c", "nginx && pm2-runtime app.js --name medpet-chatbot-service"]
