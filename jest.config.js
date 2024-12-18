@@ -12,4 +12,5 @@ module.exports = {
         functions: 50,
       },
     },
+    setupFiles: ["<rootDir>/tests/jest.setup.js"]
   };

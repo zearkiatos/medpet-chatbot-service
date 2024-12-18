@@ -8,7 +8,7 @@
     "start": "node -r @babel/register ./src/app.js",
     "prod": "node ./dist/app.js",
     "dev": "nodemon --exec babel-node ./src/app.js",
-    "test": "jest -c jest.config.js --coverage"
+    "test": "NODE_ENV=test jest -c jest.config.js --coverage"
   },
   "keywords": [],
   "author": "Pedro Capriles <caprilespe@outlook.com>",
