@@ -1,5 +1,5 @@
 import config from "@config/index.js";
-import messageHandler from "@services/messageHandler.js";
+import messageHandler from "@services/messageHandler";
 
 class WebhookController {
     async handleIncoming(req, res) {
