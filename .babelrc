@@ -18,7 +18,9 @@
           "@config": "./src/config",
           "@routes": "./src/routes",
           "@services": "./src/services",
-          "@controllers": "./src/controllers"
+          "@controllers": "./src/controllers",
+          "@tests": "./tests",
+          "@builders": "./tests/builders"
         }
       }
     ]

@@ -1,6 +1,10 @@
 import dotenv from 'dotenv';
 
-dotenv.config();
+if (process.env.NODE_ENV === 'test') {
+    dotenv.config({ path: '../../.env.test' });
+} else {
+    dotenv.config();
+}
 
 const { WEBHOOK_VERIFY_TOKEN, API_TOKEN, PORT, API_VERSION, BUSINESS_PHONE, NODE_ENV } = process.env;
 
