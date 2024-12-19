@@ -1,6 +1,6 @@
 import BaseBuilder from "@builders/baseBuilder";
 
-class RequestQuery extends BaseBuilder {
+class RequestQueryBuilder extends BaseBuilder {
     constructor() {
         super();
         this.query = {
@@ -26,4 +26,4 @@ class RequestQuery extends BaseBuilder {
     }
 }
 
-export default RequestQuery;
+export default RequestQueryBuilder;

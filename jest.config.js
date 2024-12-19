@@ -6,10 +6,10 @@ module.exports = {
     collectCoverageFrom: ["src/**/*.js", "!**/node_modules/**"],
     coverageThreshold: {
       global: {
-        statements: 50,
-        branches: 50,
-        lines: 50,
-        functions: 50,
+        statements: 65,
+        branches: 66,
+        lines: 66,
+        functions: 69,
       },
     },
     setupFiles: ["<rootDir>/tests/jest.setup.js"]
