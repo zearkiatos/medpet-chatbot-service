@@ -19,55 +19,40 @@ spec:
     spec:
       containers:
         - name: medpet-chatbot-service
-          image: abcall.azurecr.io/abcall-issues-api:1.0.0
+          image: caprilespe/medpet-chatbot-service:3.0.0 
           env:
-            - name: "FLASK_APP"
+            - name: "NODE_ENV"
               valueFrom:
                 configMapKeyRef:
-                  name: issues-configmap
-                  key: FLASK_APP
-            - name: "FLASK_ENV"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: FLASK_ENV
-            - name: "APP_NAME"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: APP_NAME
-            - name: "AUTH_API_PATH"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: AUTH_API_PATH
-            - name: "OPENAI_API_PATH"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: OPENAI_API_PATH
-            - name: "OPENAI_PREDICTIVE_MODEL"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: OPENAI_PREDICTIVE_MODEL
-            - name: "CUSTOMER_API_PATH"
-              valueFrom:
-                configMapKeyRef:
-                  name: issues-configmap
-                  key: CUSTOMER_API_PATH
-            - name: "DATABASE_URI"
+                  name: chatbot-configmap
+                  key: NODE_ENV
+            - name: "WEBHOOK_VERIFY_TOKEN"
               valueFrom:
                 secretKeyRef:
-                  name: issues-secrets
-                  key: DATABASE_URI
-            - name: "TOKEN_OPENAI"
+                  name: chatbot-secrets
+                  key: WEBHOOK_VERIFY_TOKEN
+            - name: "API_TOKEN"
               valueFrom:
                 secretKeyRef:
-                  name: issues-secrets
-                  key: TOKEN_OPENAI
+                  name: chatbot-secrets
+                  key: API_TOKEN
+            - name: "PORT"
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-configmap
+                  key: PORT
+            - name: "API_VERSION"
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-configmap
+                  key: API_VERSION
+            - name: "BUSINESS_PHONE"
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-secrets
+                  key: BUSINESS_PHONE
           ports:
-            - containerPort: 3007
+            - containerPort: 80
           resources:
             requests:
               memory: "128Mi"
@@ -81,12 +66,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: abcall-issues-api-service
+  name: medpet-chatbot-service
 spec:
   type: LoadBalancer
   selector:
-    app: abcall-issues-api
+    app: medpet-chatbot-service
   ports:
     - protocol: TCP
-      port: 3007
-      targetPort: 3007
+      port: 80
+      targetPort: 80
