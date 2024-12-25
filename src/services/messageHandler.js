@@ -6,6 +6,7 @@ class MessageHandler {
 
       if (this.isGreeting(incomingMessage)) {
         await this.sendWelcomeMessage(message.from, message.id, senderInfo);
+        await this.sendWelcomeMenu(message.from);
       } else {
         const response = `Echo: ${message.text.body}`;
         await whatsappService.sendMessage(message.from, response, message.id);
@@ -40,6 +41,35 @@ class MessageHandler {
     const name = this.getSenderName(senderInfo);
     const welcomeMessage = `Hello ${name}, Welcome to Medpet, your online Pet Shop 🐕🐈🦜. How can I help you, today?`;
     await whatsappService.sendMessage(to, welcomeMessage, messageId);
+  }
+  
+  async sendWelcomeMenu(to) {
+    const menuMessage = 'Choose an option:';
+    const buttons = [
+      {
+        type: 'reply',
+        reply: {
+          id: 'option_1',
+          title: 'Sheduled ✅',
+        },
+      },
+      {
+        type: 'reply',
+        reply: {
+          id: 'option_2',
+          title: 'Request 🤔',
+        },
+      },
+      {
+        type: 'reply',
+        reply: {
+          id: 'option_3',
+          title: 'Location 📍',
+        },
+      }
+    ];
+
+    await whatsappService.sendInteractiveButtons(to, menuMessage, buttons);
   }
 }
 
