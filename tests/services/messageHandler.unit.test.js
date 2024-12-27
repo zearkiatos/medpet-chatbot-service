@@ -8,6 +8,10 @@ import ProfileBuilder from "@builders/profileBuilder";
 
 describe("Unit test suite for messageHandler", () => {
   afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  afterAll(() => {
     jest.clearAllMocks();
   });
   test("Should handle incoming message and mark as read", async () => {
@@ -102,7 +106,7 @@ describe("Unit test suite for messageHandler", () => {
     const expectedArgs = [
       "user",
       "Hello 12345678, Welcome to Medpet, your online Pet Shop 🐕🐈🦜. How can I help you, today?",
-      "1",
+      "1"
     ];
     const messageMock = new MessageBuilder().build();
     const senderInfoMock = new SenderInfoBuilder()
@@ -126,5 +130,97 @@ describe("Unit test suite for messageHandler", () => {
     expect(markAsReadSpyOn).toHaveBeenCalled();
     expect(sendMessageSpyOn).toHaveBeenCalledWith(...expectedArgs);
     expect(sendWelcomeMenuSpyOn).toHaveBeenCalled();
+  });
+
+  test('Should process a message type interactive', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('type', 'interactive')
+      .withParam('interactive', {
+        button_reply: {
+          title: 'option_1'
+        }
+      })
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const handleMenuOptionSpyOn = jest
+      .spyOn(messageHandler, 'handleMenuOption')
+      .mockResolvedValue(true);
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+    expect(handleMenuOptionSpyOn).toHaveBeenCalled();
+  });
+
+  test('Should process an interactive request for schedule appointment', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('type', 'interactive')
+      .withParam('interactive', {
+        button_reply: {
+          title: 'sheduled ✅'
+        }
+      })
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Scheduled an appointment");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
+
+  test('Should process an interactive request for a request', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('type', 'interactive')
+      .withParam('interactive', {
+        button_reply: {
+          title: 'request 🤔'
+        }
+      })
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Make a request");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
+
+  test('Should process an interactive request for a location', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('type', 'interactive')
+      .withParam('interactive', {
+        button_reply: {
+          title: 'location 📍'
+        }
+      })
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "This is our location");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
   });
 });

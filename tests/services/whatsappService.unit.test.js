@@ -14,10 +14,7 @@ describe("Unit test suite for whatsappService", () => {
     const data = {
       messaging_product: "whatsapp",
       to: "5511999999999",
-      text: { body: "Hello, World!" },
-      context: {
-        message_id: "1",
-      },
+      text: { body: "Hello, World!" }
     };
     const axiosMock = new AxiosBuilder()
       .withParam(
@@ -32,8 +29,7 @@ describe("Unit test suite for whatsappService", () => {
 
     await whatsappService.sendMessage(
       data.to,
-      data.text.body,
-      data.context.message_id
+      data.text.body
     );
 
     expect(axios).toHaveBeenCalledWith(axiosMock);

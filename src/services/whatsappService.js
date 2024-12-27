@@ -13,10 +13,7 @@ class WhatsappService {
         data: {
           messaging_product: "whatsapp",
           to,
-          text: { body },
-          context: {
-            message_id: messageId,
-          },
+          text: { body }
         },
       });
     } catch (error) {
