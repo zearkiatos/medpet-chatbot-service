@@ -12,6 +12,12 @@ class MessageHandler {
         await whatsappService.sendMessage(message.from, response, message.id);
       }
       await whatsappService.markAsRead(message.id);
+    } else if (message?.type === "interactive") {
+      const option = message?.interactive?.button_reply?.title
+        .toLowerCase()
+        .trim();
+      await this.handleMenuOption(message.from, option);
+      await whatsappService.markAsRead(message.id);
     }
   }
 
@@ -27,9 +33,12 @@ class MessageHandler {
   }
 
   getFirstName(fullName) {
-    if (!fullName || typeof fullName !== 'string') return '';
-    const nameParts = fullName.trim().split(' ').filter(part => part);
-    return nameParts[0] || '';
+    if (!fullName || typeof fullName !== "string") return "";
+    const nameParts = fullName
+      .trim()
+      .split(" ")
+      .filter((part) => part);
+    return nameParts[0] || "";
   }
 
   getSenderName(senderInfo) {
@@ -42,34 +51,53 @@ class MessageHandler {
     const welcomeMessage = `Hello ${name}, Welcome to Medpet, your online Pet Shop 🐕🐈🦜. How can I help you, today?`;
     await whatsappService.sendMessage(to, welcomeMessage, messageId);
   }
-  
+
   async sendWelcomeMenu(to) {
-    const menuMessage = 'Choose an option:';
+    const menuMessage = "Choose an option:";
     const buttons = [
       {
-        type: 'reply',
+        type: "reply",
         reply: {
-          id: 'option_1',
-          title: 'Sheduled ✅',
+          id: "option_1",
+          title: "Sheduled ✅",
         },
       },
       {
-        type: 'reply',
+        type: "reply",
         reply: {
-          id: 'option_2',
-          title: 'Request 🤔',
+          id: "option_2",
+          title: "Request 🤔",
         },
       },
       {
-        type: 'reply',
+        type: "reply",
         reply: {
-          id: 'option_3',
-          title: 'Location 📍',
+          id: "option_3",
+          title: "Location 📍",
         },
-      }
+      },
     ];
 
     await whatsappService.sendInteractiveButtons(to, menuMessage, buttons);
+  }
+
+  async handleMenuOption(to, option) {
+    let response = null;
+    switch (option) {
+      case "sheduled ✅":
+        response = "Scheduled an appointment";
+        break;
+      case "request 🤔":
+        response = "Make a request";
+        break;
+      case "location 📍":
+        response = "This is our location";
+        break;
+      default:
+        response = "Sorry, we didn't understand that option";
+    }
+
+    await whatsappService.sendMessage(to, response);
   }
 }
 
