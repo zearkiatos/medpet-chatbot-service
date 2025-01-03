@@ -223,4 +223,27 @@ describe("Unit test suite for messageHandler", () => {
     expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "This is our location");
     expect(markAsReadSpyOn).toHaveBeenCalled();
   });
+
+  test('Should process an interactive request with an error when is a incorrect option', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('type', 'interactive')
+      .withParam('interactive', {
+        button_reply: {
+          title: 'fake option'
+        }
+      })
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Sorry, we didn't understand that option");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
 });
