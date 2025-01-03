@@ -1,7 +1,7 @@
 # Description
 This is a service to integrate whatsapp service ✆ to automate chatbot 💬🤖 messages. This service is MedPet for vet for your pets 🐕🐈🦜🩺🏥
 
-![Github](https://github.com/zearkiatos/medpet-chatbot-service/actions/workflows/action.yml/badge.svg)
+![Github](https://github.com/zearkiatos/medpet-chatbot-service/actions/workflows/action.yaml/badge.svg)
 
 # Made with
 [![JavaScript](https://img.shields.io/badge/javascript-ead547?style=for-the-badge&logo=javascript&logoColor=white&labelColor=000000)]()
