@@ -1,4 +1,4 @@
-import BaseBuilder from "@builders/BaseBuilder";
+import BaseBuilder from "@builders/baseBuilder";
 
 class ValueBuilder extends BaseBuilder {
     constructor() {
