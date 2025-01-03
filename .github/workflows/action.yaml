@@ -17,6 +17,22 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: Set environment variables
+      env:
+        API_VERSION: ${{ vars.API_VERSION }}
+        BUSINESS_PHONE: ${{ vars.BUSINESS_PHONE }}
+        NODE_ENV: ${{ vars.NODE_ENV }}
+        PORT: ${{ vars.PORT }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        WEBHOOK_VERIFY_TOKEN: ${{ secrets.WEBHOOK_VERIFY_TOKEN }}
+      run: |
+          echo "Environment variables are set"
+          echo "API_VERSION=${API_VERSION}" > .env
+          echo "BUSINESS_PHONE=${BUSINESS_PHONE}" >> .env
+          echo "NODE_ENV=${NODE_ENV}" >> .env
+          echo "PORT=${PORT}" >> .env
+          echo "API_TOKEN=${API_TOKEN}" >> .env
+          echo "WEBHOOK_VERIFY_TOKEN=${WEBHOOK_VERIFY_TOKEN}" >> .env
     - name: Generate build number
       run: echo "The build number $GITHUB_RUN_NUMBER 🏗"
     - name: Install dependencies
