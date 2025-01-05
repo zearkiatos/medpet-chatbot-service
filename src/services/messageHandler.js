@@ -1,4 +1,5 @@
 import whatsappService from "./whatsappService";
+import config from "@config";
 class MessageHandler {
   async handleIncomingMessage(message, senderInfo) {
     if (message?.type === "text") {
@@ -7,6 +8,10 @@ class MessageHandler {
       if (this.isGreeting(incomingMessage)) {
         await this.sendWelcomeMessage(message.from, message.id, senderInfo);
         await this.sendWelcomeMenu(message.from);
+      } else if (
+        ["video", "audio", "image", "document"].includes(incomingMessage)
+      ) {
+        await this.sendMedia(message.from, incomingMessage);
       } else {
         const response = `Echo: ${message.text.body}`;
         await whatsappService.sendMessage(message.from, response, message.id);
@@ -98,6 +103,31 @@ class MessageHandler {
     }
 
     await whatsappService.sendMessage(to, response);
+  }
+
+  mediaActions = {
+    audio: {
+      url: `${config.CDN_BASE_URL}/medpet-audio.aac`,
+      caption: "Welcome 🔉",
+    },
+    image: {
+      url: `${config.CDN_BASE_URL}/medpet-imagen.png`,
+      caption: "¡This is an image! 🏞️",
+    },
+    video: {
+      url: `${config.CDN_BASE_URL}/medpet-video.mp4`,
+      caption: "¡This is a video! 🎥",
+    },
+    document: {
+      url: `${config.CDN_BASE_URL}/medpet-file.pdf`,
+      caption: "¡This is a PDF! 📄",
+    },
+  };
+
+  async sendMedia(to, media) {
+    const { url, caption } = this.mediaActions[media];
+
+    await whatsappService.sendMediaMessage(to, media, url, caption);
   }
 }
 

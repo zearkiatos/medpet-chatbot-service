@@ -246,4 +246,27 @@ describe("Unit test suite for messageHandler", () => {
     expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Sorry, we didn't understand that option");
     expect(markAsReadSpyOn).toHaveBeenCalled();
   });
+
+  test('Should process a media request and return an audio media', async () => {
+    const sendMediaSpyOn = jest
+    .spyOn(whatsappService, 'sendMediaMessage')
+    .mockResolvedValue(true);
+    const messageMock = new MessageBuilder()
+    .withParam(
+      "text",
+      new TextBuilder().withParam("body", 'audio').build()
+    )
+    .build();
+    const argsExpected = [
+      messageMock.from,
+      'audio',
+      'http://cdn.example.com/medpet-audio.aac',
+      'Welcome 🔉'
+    ];
+    const senderInfoMock = new SenderInfoBuilder().build();
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMediaSpyOn).toHaveBeenCalledWith(...argsExpected);
+  });
 });

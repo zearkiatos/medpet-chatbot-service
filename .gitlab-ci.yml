@@ -1,0 +1,47 @@
+image: node:18-alpine
+stages:
+  - install
+  - test
+  - docker
+
+install-dependencies:
+  stage: install
+  script:
+    - npm install
+  artifacts:
+    expire_in: 1hr
+    paths:
+      - /
+
+test-app:
+  stage: test
+  dependencies:
+    - install-dependencies
+  script:
+    - echo "Testing the app 🧪"
+    - touch .env
+    - echo "ENVIRONMENT=${ENVIRONMENT}" > .env
+    - echo "PLATZI_FAKE_API_BASE_URL=${PLATZI_FAKE_API_BASE_URL}" >> .env
+    - npm run test
+
+build-docker:
+  image: docker:latest
+  variables:
+    DOCKER_DRIVER: overlay
+    CRYPTOGRAPHY_DONT_BUILD_RUST: 1
+  services:
+  - docker:dind
+  stage: docker
+  environment: staging
+  cache:
+    paths:
+      - node_modules/
+  dependencies:
+    - install-dependencies
+  script:
+    - echo "Build docker 🐳"
+    - docker build . -t=medpet-chatbot-service:gitlab-build-${CI_PIPELINE_IID}
+  artifacts:
+    expire_in: 1hr
+    paths:
+      - build
