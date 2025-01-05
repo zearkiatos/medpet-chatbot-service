@@ -98,7 +98,6 @@ describe("Unit test suite for messageHandler", () => {
     await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
 
     expect(markAsReadSpyOn).toHaveBeenCalled();
-    expect(sendMessageSpyOn).toHaveBeenCalled();
     expect(sendWelcomeMenuSpyOn).not.toHaveBeenCalled();
   });
 
@@ -174,7 +173,7 @@ describe("Unit test suite for messageHandler", () => {
 
     await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
 
-    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Scheduled an appointment");
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Please, could you type your name?");
     expect(markAsReadSpyOn).toHaveBeenCalled();
   });
 
@@ -260,7 +259,7 @@ describe("Unit test suite for messageHandler", () => {
     const argsExpected = [
       messageMock.from,
       'audio',
-      'http://cdn.example.com/medpet-audio.aac',
+      'https://s3.amazonaws.com/gndx.dev/medpet-audio.aac',
       'Welcome 🔉'
     ];
     const senderInfoMock = new SenderInfoBuilder().build();
@@ -268,5 +267,71 @@ describe("Unit test suite for messageHandler", () => {
     await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
 
     expect(sendMediaSpyOn).toHaveBeenCalledWith(...argsExpected);
+  });
+
+  test('Should process an appointment flow to get the name for schedule', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('text', new TextBuilder().withParam('body', 'name').build())
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+    messageHandler.appointmentState = {
+      [messageMock.from]: {
+        step: 'name'
+      }
+    };
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "What is your pet's name?");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
+
+  test('Should process an appointment flow to get the step petName', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('text', new TextBuilder().withParam('body', 'name').build())
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+    messageHandler.appointmentState = {
+      [messageMock.from]: {
+        step: 'petName'
+      }
+    };
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "What type of pet do you have? for example: dog, cat, bird");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
+
+  test('Should process an appointment flow to get the step petType', async () => {
+    const messageMock = new MessageBuilder()
+      .withParam('text', new TextBuilder().withParam('body', 'name').build())
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, 'markAsRead')
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, 'sendMessage')
+      .mockResolvedValue(true);
+    messageHandler.appointmentState = {
+      [messageMock.from]: {
+        step: 'petType'
+      }
+    };
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(messageMock.from, "Which is the reason for your request?");
+    expect(markAsReadSpyOn).toHaveBeenCalled();
   });
 });

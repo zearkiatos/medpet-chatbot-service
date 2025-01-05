@@ -313,4 +313,66 @@ describe("Unit test suite for whatsappService", () => {
 
     expect(axios).toHaveBeenCalledWith(axiosMock);
   });
+
+  test('Should log an error when trying to send a media message', async () => {
+    const mockResponse = 'Some error weird ocurred 🤯';
+    const messageExpected = `Error ocurred sending media message: ${mockResponse}`;
+    const jestConsoleSpyOn = jest.spyOn(console, 'error');
+    axios.mockRejectedValue(mockResponse);
+    const data = {
+      messaging_product: "whatsapp",
+      to: "5511999999999",
+      type: 'document',
+      document: {
+        link: 'document.pdf',
+        caption: 'This is a document caption',
+        filename: 'medpet.pdf'
+      }
+    };
+    const axiosMock = new AxiosBuilder()
+      .withParam(
+        "headers",
+        new HeadersBuilder()
+          .withParam("Authorization", `Bearer ${config.API_TOKEN}`)
+          .build()
+      )
+      .withParam('url', `https://graph.facebook.com/v21.0/${config.BUSINESS_PHONE}/messages`)
+      .withParam("data", data)
+      .build();
+
+    await whatsappService.sendMediaMessage(
+      data.to,
+      data.type,
+      data.document.link,
+      data.document.caption,
+    );
+
+    expect(axios).toHaveBeenCalledWith(axiosMock);
+    expect(jestConsoleSpyOn).toHaveBeenCalledWith(messageExpected);
+  });
+
+  test('Should log an error when trying when a type is unknown', async () => {
+    const mockResponse = 'Some error weird ocurred 🤯';
+    const messageExpected = `Error ocurred sending media message: ${mockResponse}`;
+    const jestConsoleSpyOn = jest.spyOn(console, 'error');
+    axios.mockRejectedValue(mockResponse);
+    const data = {
+      messaging_product: "whatsapp",
+      to: "5511999999999",
+      type: 'unknown',
+      unknown: {
+        link: 'unknown.jpg',
+        caption: 'This is an unknown caption'
+      }
+    };
+
+    await whatsappService.sendMediaMessage(
+      data.to,
+      data.type,
+      undefined,
+      undefined,
+    );
+
+    expect(jestConsoleSpyOn).toHaveBeenCalledWith(messageExpected);
+  });
 });

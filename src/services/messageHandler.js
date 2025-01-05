@@ -1,6 +1,9 @@
 import whatsappService from "./whatsappService";
 import config from "@config";
 class MessageHandler {
+  constructor() {
+    this.appointmentState = {};
+  }
   async handleIncomingMessage(message, senderInfo) {
     if (message?.type === "text") {
       const incomingMessage = message.text.body.toLowerCase().trim();
@@ -13,8 +16,7 @@ class MessageHandler {
       ) {
         await this.sendMedia(message.from, incomingMessage);
       } else {
-        const response = `Echo: ${message.text.body}`;
-        await whatsappService.sendMessage(message.from, response, message.id);
+        this.handleAppointmentFlow(message.from, incomingMessage);
       }
       await whatsappService.markAsRead(message.id);
     } else if (message?.type === "interactive") {
@@ -90,7 +92,10 @@ class MessageHandler {
     let response = null;
     switch (option) {
       case "sheduled ✅":
-        response = "Scheduled an appointment";
+        this.appointmentState[to] = {
+          step: "name",
+        };
+        response = "Please, could you type your name?";
         break;
       case "request 🤔":
         response = "Make a request";
@@ -128,6 +133,38 @@ class MessageHandler {
     const { url, caption } = this.mediaActions[media];
 
     await whatsappService.sendMediaMessage(to, media, url, caption);
+  }
+
+  async handleAppointmentFlow(to, message) {
+    const state = this.appointmentState[to];
+    let response = null;
+
+    if (!state) {
+      return;
+    }
+
+    switch(state.step) {
+      case "name":
+        state.name = message;
+        state.step = "petName";
+        response = "What is your pet's name?";
+        break;
+      case "petName":
+        state.petName = message;
+        state.step = "petType";
+        response = "What type of pet do you have? for example: dog, cat, bird";
+        break;
+      case "petType":
+        state.petType = message;
+        state.step = "reason";
+        response = "Which is the reason for your request?";
+        break;
+      case "reason":
+        state.reason = message;
+        response = "Thank you for scheduled your appointment";
+    }
+
+    await whatsappService.sendMessage(to, response);
   }
 }
 
