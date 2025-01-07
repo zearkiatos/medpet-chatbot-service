@@ -23,6 +23,7 @@ jobs:
         BUSINESS_PHONE: ${{ vars.BUSINESS_PHONE }}
         NODE_ENV: ${{ vars.NODE_ENV }}
         PORT: ${{ vars.PORT }}
+        CDN_BASE_URL: ${{ vars.CDN_BASE_URL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         WEBHOOK_VERIFY_TOKEN: ${{ secrets.WEBHOOK_VERIFY_TOKEN }}
       run: |
@@ -33,6 +34,7 @@ jobs:
           echo "PORT=${PORT}" >> .env
           echo "API_TOKEN=${API_TOKEN}" >> .env
           echo "WEBHOOK_VERIFY_TOKEN=${WEBHOOK_VERIFY_TOKEN}" >> .env
+          echo "CDN_BASE_URL=${CDN_BASE_URL}" >> .env
     - name: Generate build number
       run: echo "The build number $GITHUB_RUN_NUMBER 🏗"
     - name: Install dependencies

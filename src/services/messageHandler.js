@@ -143,7 +143,7 @@ class MessageHandler {
       return;
     }
 
-    switch(state.step) {
+    switch (state.step) {
       case "name":
         state.name = message;
         state.step = "petName";
@@ -161,10 +161,36 @@ class MessageHandler {
         break;
       case "reason":
         state.reason = message;
-        response = "Thank you for scheduled your appointment";
+        response = this.completeAppointment(to);
     }
 
     await whatsappService.sendMessage(to, response);
+  }
+
+  completeAppointment(to) {
+    const appointment = this.appointmentState[to];
+    delete this.appointmentState[to];
+
+    const userData = [
+      to,
+      appointment.name,
+      appointment.petName,
+      appointment.petType,
+      appointment.reason,
+      new Date().toISOString(),
+    ];
+
+    console.log(userData);
+
+    return `Thank you to scheduled your appointment
+    Summary of your appointment:
+    
+    Name: ${appointment.name}
+    Pet's name: ${appointment.petName}
+    Pet's type: ${appointment.petType}
+    Reason: ${appointment.reason}
+    
+    We will contact you soon to confirm the date and time of your appointment.`;
   }
 }
 
