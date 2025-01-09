@@ -3,3 +3,5 @@ dist
 .env
 coverage
 k8s-secrets.yaml
+credentials
+.DS_Store
