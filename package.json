@@ -21,7 +21,8 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "googleapis": "^144.0.0",
-    "helmet": "^8.0.0"
+    "helmet": "^8.0.0",
+    "openai": "^4.78.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.26.4",

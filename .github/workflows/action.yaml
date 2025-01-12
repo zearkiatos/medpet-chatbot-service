@@ -26,6 +26,10 @@ jobs:
         CDN_BASE_URL: ${{ vars.CDN_BASE_URL }}
         API_TOKEN: ${{ secrets.API_TOKEN }}
         WEBHOOK_VERIFY_TOKEN: ${{ secrets.WEBHOOK_VERIFY_TOKEN }}
+        GOOGLE_SPREAD_SHEET_ID: ${{ secrets.GOOGLE_SPREAD_SHEET_ID }}
+        GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+        CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+        CHATGPT_PROMPT: ${{ vars.CHATGPT_PROMPT }}
       run: |
           echo "Environment variables are set"
           echo "API_VERSION=${API_VERSION}" > .env
@@ -35,6 +39,14 @@ jobs:
           echo "API_TOKEN=${API_TOKEN}" >> .env
           echo "WEBHOOK_VERIFY_TOKEN=${WEBHOOK_VERIFY_TOKEN}" >> .env
           echo "CDN_BASE_URL=${CDN_BASE_URL}" >> .env
+          echo "GOOGLE_SPREAD_SHEET_ID=${GOOGLE_SPREAD_SHEET_ID}" >> .env
+          echo "CHATGPT_API_KEY=${CHATGPT_API_KEY}" >> .env
+          echo "CHATGPT_PROMPT=${CHATGPT_PROMPT}" >> .env
+          echo "Adding google service account to file"
+          mkdir src/credentials
+          cd src/credentials
+          touch google_service_account.json
+          echo "GOOGLE_SERVICE_ACCOUNT=${GOOGLE_SERVICE_ACCOUNT}" > google_service_account.json
     - name: Generate build number
       run: echo "The build number $GITHUB_RUN_NUMBER 🏗"
     - name: Install dependencies
