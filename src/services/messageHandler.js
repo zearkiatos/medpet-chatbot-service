@@ -1,4 +1,5 @@
 import whatsappService from "./whatsappService";
+import googleSheetsService from "./googleSheetsService";
 import config from "@config";
 class MessageHandler {
   constructor() {
@@ -180,7 +181,7 @@ class MessageHandler {
       new Date().toISOString(),
     ];
 
-    console.log(userData);
+    googleSheetsService.appendToSheet(userData);
 
     return `Thank you to scheduled your appointment
     Summary of your appointment:

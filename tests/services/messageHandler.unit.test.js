@@ -1,6 +1,7 @@
 import { faker } from "@faker-js/faker";
 import whatsappService from "@services/whatsappService";
 import messageHandler from "@services/messageHandler";
+import googleSheetsService from "@services/googleSheetsService";
 import MessageBuilder from "@builders/messageBuilder";
 import TextBuilder from "@builders/textBuilder";
 import SenderInfoBuilder from "@builders/senderInfoBuilder";
@@ -263,6 +264,9 @@ describe("Unit test suite for messageHandler", () => {
     const sendMediaSpyOn = jest
       .spyOn(whatsappService, "sendMediaMessage")
       .mockResolvedValue(true);
+    jest
+      .spyOn(googleSheetsService, "appendToSheet")
+      .mockResolvedValue("Data added successfully");
     const messageMock = new MessageBuilder()
       .withParam("text", new TextBuilder().withParam("body", "audio").build())
       .build();
@@ -357,7 +361,10 @@ describe("Unit test suite for messageHandler", () => {
 
   test("Should process an appointment flow to get the step reason", async () => {
     const messageMock = new MessageBuilder()
-      .withParam("text", new TextBuilder().withParam("body", faker.lorem.sentence()).build())
+      .withParam(
+        "text",
+        new TextBuilder().withParam("body", faker.lorem.sentence()).build()
+      )
       .build();
     const senderInfoMock = new SenderInfoBuilder().build();
     const markAsReadSpyOn = jest

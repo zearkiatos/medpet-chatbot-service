@@ -9,7 +9,7 @@ module.exports = {
         statements: 91,
         branches: 92,
         lines: 91,
-        functions: 90,
+        functions: 91,
       },
     },
     setupFiles: ["<rootDir>/tests/jest.setup.js"]

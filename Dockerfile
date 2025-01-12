@@ -20,6 +20,7 @@ RUN npm install -g pm2
 
 COPY --from=build /usr/src/app/package*.json ./
 COPY --from=build /usr/src/app/dist/ ./
+COPY --from=build /usr/src/app/src/credentials/google_service_account.json ./src/credentials/
 
 RUN npm install
 
