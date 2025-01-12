@@ -2,6 +2,7 @@ import { faker } from "@faker-js/faker";
 import whatsappService from "@services/whatsappService";
 import messageHandler from "@services/messageHandler";
 import googleSheetsService from "@services/googleSheetsService";
+import * as openAIService from "@services/openAIService";
 import MessageBuilder from "@builders/messageBuilder";
 import TextBuilder from "@builders/textBuilder";
 import SenderInfoBuilder from "@builders/senderInfoBuilder";
@@ -198,12 +199,13 @@ describe("Unit test suite for messageHandler", () => {
     const sendMessageSpyOn = jest
       .spyOn(whatsappService, "sendMessage")
       .mockResolvedValue(true);
+    jest.spyOn(openAIService, "default").mockResolvedValue(true);
 
     await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
 
     expect(sendMessageSpyOn).toHaveBeenCalledWith(
       messageMock.from,
-      "Make a request"
+      "What is your request?"
     );
     expect(markAsReadSpyOn).toHaveBeenCalled();
   });
@@ -250,6 +252,7 @@ describe("Unit test suite for messageHandler", () => {
     const sendMessageSpyOn = jest
       .spyOn(whatsappService, "sendMessage")
       .mockResolvedValue(true);
+    jest.spyOn(openAIService, "default").mockResolvedValue(true);
 
     await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
 
@@ -294,6 +297,7 @@ describe("Unit test suite for messageHandler", () => {
     const sendMessageSpyOn = jest
       .spyOn(whatsappService, "sendMessage")
       .mockResolvedValue(true);
+    jest.spyOn(openAIService, "default").mockResolvedValue("What is your pet's name?");
     messageHandler.appointmentState = {
       [messageMock.from]: {
         step: "name",
@@ -359,6 +363,33 @@ describe("Unit test suite for messageHandler", () => {
     expect(markAsReadSpyOn).toHaveBeenCalled();
   });
 
+  test("Should process an appointment flow to get the step name", async () => {
+    const messageMock = new MessageBuilder()
+      .withParam("text", new TextBuilder().withParam("body", "name").build())
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const markAsReadSpyOn = jest
+      .spyOn(whatsappService, "markAsRead")
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, "sendMessage")
+      .mockResolvedValue(true);
+    messageHandler.appointmentState = {
+      [messageMock.from]: {
+        step: "name",
+      },
+    };
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalledWith(
+      messageMock.from,
+      "What is your pet's name?"
+    );
+    expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
+
+
   test("Should process an appointment flow to get the step reason", async () => {
     const messageMock = new MessageBuilder()
       .withParam(
@@ -383,5 +414,59 @@ describe("Unit test suite for messageHandler", () => {
 
     expect(sendMessageSpyOn).toHaveBeenCalled();
     expect(markAsReadSpyOn).toHaveBeenCalled();
+  });
+
+  test("Should process an assistant flow to get the step question", async () => {
+    const messageMock = new MessageBuilder()
+      .withParam(
+        "text",
+        new TextBuilder().withParam("body", faker.lorem.sentence()).build()
+      )
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const sendInteractiveButtonSpyOn = jest
+      .spyOn(whatsappService, "sendInteractiveButtons")
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, "sendMessage")
+      .mockResolvedValue(true);
+    jest.spyOn(openAIService, "default").mockResolvedValue(true);
+    messageHandler.assistantState = {
+      [messageMock.from]: {
+        step: "question",
+      },
+    };
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalled();
+    expect(sendInteractiveButtonSpyOn).toHaveBeenCalled();
+  });
+
+  test("Should process an assistant flow to without any step", async () => {
+    const messageMock = new MessageBuilder()
+      .withParam(
+        "text",
+        new TextBuilder().withParam("body", faker.lorem.sentence()).build()
+      )
+      .build();
+    const senderInfoMock = new SenderInfoBuilder().build();
+    const sendInteractiveButtonSpyOn = jest
+      .spyOn(whatsappService, "sendInteractiveButtons")
+      .mockResolvedValue(true);
+    const sendMessageSpyOn = jest
+      .spyOn(whatsappService, "sendMessage")
+      .mockResolvedValue(true);
+    jest.spyOn(openAIService, "default").mockResolvedValue(true);
+    messageHandler.assistantState = {
+      [messageMock.from]: {
+        step: undefined,
+      },
+    };
+
+    await messageHandler.handleIncomingMessage(messageMock, senderInfoMock);
+
+    expect(sendMessageSpyOn).toHaveBeenCalled();
+    expect(sendInteractiveButtonSpyOn).toHaveBeenCalled();
   });
 });

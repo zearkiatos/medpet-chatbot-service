@@ -1,9 +1,11 @@
-import whatsappService from "./whatsappService";
-import googleSheetsService from "./googleSheetsService";
+import whatsappService from "@services/whatsappService";
+import googleSheetsService from "@services/googleSheetsService";
+import openAIService from "@services/openAIService";
 import config from "@config";
 class MessageHandler {
   constructor() {
     this.appointmentState = {};
+    this.assistantState = {};
   }
   async handleIncomingMessage(message, senderInfo) {
     if (message?.type === "text") {
@@ -16,6 +18,8 @@ class MessageHandler {
         ["video", "audio", "image", "document"].includes(incomingMessage)
       ) {
         await this.sendMedia(message.from, incomingMessage);
+      } else if (this.assistantState[message.from]) {
+        await this.handleAssistantFlow(message.from, incomingMessage);
       } else {
         this.handleAppointmentFlow(message.from, incomingMessage);
       }
@@ -99,7 +103,10 @@ class MessageHandler {
         response = "Please, could you type your name?";
         break;
       case "request 🤔":
-        response = "Make a request";
+        this.assistantState[to] = {
+          step: "question"
+        };
+        response = "What is your request?";
         break;
       case "location 📍":
         response = "This is our location";
@@ -192,6 +199,44 @@ class MessageHandler {
     Reason: ${appointment.reason}
     
     We will contact you soon to confirm the date and time of your appointment.`;
+  }
+
+  async handleAssistantFlow(to, message) {
+    const state = this.assistantState[to];
+    let response = null;
+    const menuMessage = "Was the answer helpful?";
+    const buttons = [
+      {
+        type: "reply",
+        reply: {
+          id: "option_4",
+          title: "Yes, thanks",
+        },
+      },
+      {
+        type: "reply",
+        reply: {
+          id: "option_5",
+          title: "Ask another question",
+        },
+      },
+      {
+        type: "reply",
+        reply: {
+          id: "option_6",
+          title: "Emergency 🆘",
+        },
+      }
+    ];
+
+    if (state.step === "question") {
+      response = await openAIService(message);
+    }
+
+    delete this.assistantState[to];
+
+    await whatsappService.sendMessage(to, response);
+    await whatsappService.sendInteractiveButtons(to, menuMessage, buttons);
   }
 }
 

@@ -1,8 +1,8 @@
 import OpenAIService from "@services/openAIService";
 
 jest.mock("openai", () => {
-  let createMock = ({ message }) => {
-    if (message[1].content === "Hello") {
+  let createMock = ({ messages }) => {
+    if (messages[1].content === "Hello") {
       return {
         choices: [
           {
@@ -34,5 +34,13 @@ describe("Unit test suite for Open AI Service", () => {
     const response = await OpenAIService("Hello");
 
     expect(response).toBe("Hi");
+  });
+
+  test("Should throw an error when calling Open AI API", async () => {
+    const consoleErrorSpy = jest.spyOn(console, "error");
+
+    await OpenAIService("Invalid message");
+
+    expect(consoleErrorSpy).toHaveBeenCalledWith(new Error("Error"));
   });
 });

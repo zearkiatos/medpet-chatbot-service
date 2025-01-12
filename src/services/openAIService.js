@@ -8,8 +8,8 @@ const client = new OpenAI({
 const openAIService = async (message) => {
   try {
     const response = await client.chat.completions.create({
-      message: [
-        { role: "system", content: "prompt" },
+      messages: [
+        { role: "system", content: config.CHATGPT_PROMPT },
         { role: "user", content: message },
       ],
       model: "gpt-4o",
