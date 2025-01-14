@@ -2,6 +2,7 @@ import whatsappService from "@services/whatsappService";
 import googleSheetsService from "@services/googleSheetsService";
 import openAIService from "@services/openAIService";
 import config from "@config";
+import contacts from "@constants/contacts";
 class MessageHandler {
   constructor() {
     this.appointmentState = {};
@@ -25,9 +26,7 @@ class MessageHandler {
       }
       await whatsappService.markAsRead(message.id);
     } else if (message?.type === "interactive") {
-      const option = message?.interactive?.button_reply?.title
-        .toLowerCase()
-        .trim();
+      const option = message?.interactive?.button_reply?.id;
       await this.handleMenuOption(message.from, option);
       await whatsappService.markAsRead(message.id);
     }
@@ -96,23 +95,26 @@ class MessageHandler {
   async handleMenuOption(to, option) {
     let response = null;
     switch (option) {
-      case "sheduled ✅":
+      case "option_1":
         this.appointmentState[to] = {
           step: "name",
         };
         response = "Please, could you type your name?";
         break;
-      case "request 🤔":
+      case "option_2":
         this.assistantState[to] = {
           step: "question"
         };
         response = "What is your request?";
         break;
-      case "location 📍":
+      case "option_3":
         response = "This is our location";
         break;
+      case "option_6":
+        response = "If this is an emergency, we invite you to call our attention line";
+        await this.sendContact(to);
       default:
-        response = "Sorry, we didn't understand that option";
+        console.warn("Sorry, we didn't understand that option")
     }
 
     await whatsappService.sendMessage(to, response);
@@ -237,6 +239,12 @@ class MessageHandler {
 
     await whatsappService.sendMessage(to, response);
     await whatsappService.sendInteractiveButtons(to, menuMessage, buttons);
+  }
+
+  async sendContact(to) {
+    const contact = contacts;
+
+    await whatsappService.sendContactMessage(to, contact);
   }
 }
 

@@ -19,6 +19,7 @@
           "@routes": "./src/routes",
           "@services": "./src/services",
           "@controllers": "./src/controllers",
+          "@constants": "./src/constants",
           "@tests": "./tests",
           "@builders": "./tests/builders"
         }
