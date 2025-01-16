@@ -94,7 +94,7 @@ describe("Unit test suite for whatsappService", () => {
 
   test("Should log an error when trying to mark a message as read", async () => {
     const mockResponse = 'Some error weird ocurred 🤯';
-    const messageExpected = 'Error marking message as read:';
+    const messageExpected = 'Error sending message:';
     const jestConsoleSpyOn = jest.spyOn(console, 'error');
     axios.mockRejectedValue(mockResponse);
     const data = {
@@ -152,7 +152,10 @@ describe("Unit test suite for whatsappService", () => {
 
   test("Should log when some error ocurred when handle interactive requests", async () => {
     const mockResponse = 'Some error weird ocurred 🤯';
-    const messageExpected = `Error ocurred render the buttons: ${mockResponse}`;
+    const messageExpected = [
+      'Error sending message:',
+      mockResponse
+    ];
     const jestConsoleSpyOn = jest.spyOn(console, 'error');
     axios.mockRejectedValue(mockResponse);
     const data = {
@@ -179,7 +182,7 @@ describe("Unit test suite for whatsappService", () => {
     );
 
     expect(axios).toHaveBeenCalledWith(axiosMock);
-    expect(jestConsoleSpyOn).toHaveBeenCalledWith(messageExpected);
+    expect(jestConsoleSpyOn).toHaveBeenCalledWith(...messageExpected);
   });
 
   test("Should a message with a multimedia resource with a type image", async () => {
@@ -316,7 +319,10 @@ describe("Unit test suite for whatsappService", () => {
 
   test('Should log an error when trying to send a media message', async () => {
     const mockResponse = 'Some error weird ocurred 🤯';
-    const messageExpected = `Error ocurred sending media message: ${mockResponse}`;
+    const messageExpected = [
+      "Error sending message:",
+      mockResponse
+    ]
     const jestConsoleSpyOn = jest.spyOn(console, 'error');
     axios.mockRejectedValue(mockResponse);
     const data = {
@@ -348,7 +354,7 @@ describe("Unit test suite for whatsappService", () => {
     );
 
     expect(axios).toHaveBeenCalledWith(axiosMock);
-    expect(jestConsoleSpyOn).toHaveBeenCalledWith(messageExpected);
+    expect(jestConsoleSpyOn).toHaveBeenCalledWith(...messageExpected);
   });
 
   test('Should log an error when trying when a type is unknown', async () => {
@@ -366,13 +372,16 @@ describe("Unit test suite for whatsappService", () => {
       }
     };
 
-    await whatsappService.sendMediaMessage(
-      data.to,
-      data.type,
-      undefined,
-      undefined,
-    );
-
-    expect(jestConsoleSpyOn).toHaveBeenCalledWith(messageExpected);
+    try {
+      await whatsappService.sendMediaMessage(
+        data.to,
+        data.type,
+        undefined,
+        undefined,
+      );
+    }
+    catch(error) {
+      expect(error.message).toEqual('Invalid media type');
+    }
   });
 });

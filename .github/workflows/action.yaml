@@ -30,6 +30,7 @@ jobs:
         GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
         CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
         CHATGPT_PROMPT: ${{ vars.CHATGPT_PROMPT }}
+        FACEBOOK_GRAPH_BASE_URL: ${{ vars.FACEBOOK_GRAPH_BASE_URL }}
       run: |
           echo "Environment variables are set"
           echo "API_VERSION=${API_VERSION}" > .env
@@ -42,6 +43,7 @@ jobs:
           echo "GOOGLE_SPREAD_SHEET_ID=${GOOGLE_SPREAD_SHEET_ID}" >> .env
           echo "CHATGPT_API_KEY=${CHATGPT_API_KEY}" >> .env
           echo "CHATGPT_PROMPT=${CHATGPT_PROMPT}" >> .env
+          echo "FACEBOOK_GRAPH_BASE_URL=${FACEBOOK_GRAPH_BASE_URL}" >> .env
           echo "Adding google service account to file"
           mkdir src/credentials
           cd src/credentials

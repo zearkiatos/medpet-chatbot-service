@@ -17,6 +17,7 @@ const {
   GOOGLE_SPREAD_SHEET_ID,
   CHATGPT_API_KEY,
   CHATGPT_PROMPT,
+  FACEBOOK_GRAPH_BASE_URL,
 } = process.env;
 
 export default {
@@ -30,4 +31,5 @@ export default {
   GOOGLE_SPREAD_SHEET_ID,
   CHATGPT_API_KEY,
   CHATGPT_PROMPT,
+  FACEBOOK_GRAPH_BASE_URL,
 };
