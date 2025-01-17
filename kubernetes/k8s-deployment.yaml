@@ -1,0 +1,77 @@
+###################################
+# medpet-chatbot-service
+###################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medpet-chatbot-service
+  labels:
+    app: medpet-chatbot-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: medpet-chatbot-service
+  template:
+    metadata:
+      labels:
+        app: medpet-chatbot-service
+    spec:
+      containers:
+        - name: medpet-chatbot-service
+          image: caprilespe/medpet-chatbot-service:3.0.0 
+          env:
+            - name: "NODE_ENV"
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-configmap
+                  key: NODE_ENV
+            - name: "WEBHOOK_VERIFY_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-secrets
+                  key: WEBHOOK_VERIFY_TOKEN
+            - name: "API_TOKEN"
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-secrets
+                  key: API_TOKEN
+            - name: "PORT"
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-configmap
+                  key: PORT
+            - name: "API_VERSION"
+              valueFrom:
+                configMapKeyRef:
+                  name: chatbot-configmap
+                  key: API_VERSION
+            - name: "BUSINESS_PHONE"
+              valueFrom:
+                secretKeyRef:
+                  name: chatbot-secrets
+                  key: BUSINESS_PHONE
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "256Mi"
+              cpu: "1024m"
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: medpet-chatbot-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: medpet-chatbot-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80

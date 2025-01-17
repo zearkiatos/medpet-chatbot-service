@@ -1,0 +1,22 @@
+
+###################################
+# INGRESS
+###################################
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: medpet-chatbot-service-ingress
+  labels:
+    name:  medpet-chatbot-service-ingress
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: medpet-chatbot-service
+            port: 
+              number: 80

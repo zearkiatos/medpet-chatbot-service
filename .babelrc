@@ -1,0 +1,29 @@
+{
+  "presets": [
+    ["@babel/preset-env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
+  "plugins": [
+    "@babel/transform-runtime",
+    "@babel/plugin-proposal-class-properties",
+    [
+      "module-resolver",
+      {
+        "root": ["./src"],
+        "alias": {
+          "@app": "./src",
+          "@config": "./src/config",
+          "@routes": "./src/routes",
+          "@services": "./src/services",
+          "@controllers": "./src/controllers",
+          "@constants": "./src/constants",
+          "@tests": "./tests",
+          "@builders": "./tests/builders"
+        }
+      }
+    ]
+  ]
+}

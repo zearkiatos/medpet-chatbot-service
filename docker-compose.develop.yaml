@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  service:
+    env_file: 
+      - .env
+    build:
+      context: .
+      dockerfile: develop.Dockerfile
+    container_name: medpet-chatbot-develop-service
+    volumes: 
+      - ".:/usr/src/app"
+    ports:
+      - "3001:3000"

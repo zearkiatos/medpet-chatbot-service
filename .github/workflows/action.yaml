@@ -1,0 +1,59 @@
+name: Node.js CI
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: 
+      name: staging
+    strategy:
+      matrix:
+        node-version: [22.x]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Set environment variables
+      env:
+        API_VERSION: ${{ vars.API_VERSION }}
+        BUSINESS_PHONE: ${{ vars.BUSINESS_PHONE }}
+        NODE_ENV: ${{ vars.NODE_ENV }}
+        PORT: ${{ vars.PORT }}
+        CDN_BASE_URL: ${{ vars.CDN_BASE_URL }}
+        API_TOKEN: ${{ secrets.API_TOKEN }}
+        WEBHOOK_VERIFY_TOKEN: ${{ secrets.WEBHOOK_VERIFY_TOKEN }}
+        GOOGLE_SPREAD_SHEET_ID: ${{ secrets.GOOGLE_SPREAD_SHEET_ID }}
+        GOOGLE_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+        CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+        CHATGPT_PROMPT: ${{ vars.CHATGPT_PROMPT }}
+        FACEBOOK_GRAPH_BASE_URL: ${{ vars.FACEBOOK_GRAPH_BASE_URL }}
+      run: |
+          echo "Environment variables are set"
+          echo "API_VERSION=${API_VERSION}" > .env
+          echo "BUSINESS_PHONE=${BUSINESS_PHONE}" >> .env
+          echo "NODE_ENV=${NODE_ENV}" >> .env
+          echo "PORT=${PORT}" >> .env
+          echo "API_TOKEN=${API_TOKEN}" >> .env
+          echo "WEBHOOK_VERIFY_TOKEN=${WEBHOOK_VERIFY_TOKEN}" >> .env
+          echo "CDN_BASE_URL=${CDN_BASE_URL}" >> .env
+          echo "GOOGLE_SPREAD_SHEET_ID=${GOOGLE_SPREAD_SHEET_ID}" >> .env
+          echo "CHATGPT_API_KEY=${CHATGPT_API_KEY}" >> .env
+          echo "CHATGPT_PROMPT=${CHATGPT_PROMPT}" >> .env
+          echo "FACEBOOK_GRAPH_BASE_URL=${FACEBOOK_GRAPH_BASE_URL}" >> .env
+          echo "Adding google service account to file"
+          mkdir src/credentials
+          cd src/credentials
+          touch google_service_account.json
+          echo "GOOGLE_SERVICE_ACCOUNT=${GOOGLE_SERVICE_ACCOUNT}" > google_service_account.json
+    - name: Generate build number
+      run: echo "The build number $GITHUB_RUN_NUMBER 🏗"
+    - name: Install dependencies
+      run: npm install
+    - name: Test 🧪
+      run: npm run test
+    - name: Build docker 🐳
+      run: docker build . -t=medpet-chatbot-service:github-build-$GITHUB_RUN_NUMBER
