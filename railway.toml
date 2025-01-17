@@ -1,0 +1,18 @@
+[service]
+name = "medpet-chatbot-service"
+start = "make docker-up"
+build = """
+    npm install
+    mkdir src/credentials
+    touch src/credentials/google_service_account.json
+    echo \"GOOGLE_SERVICE_ACCOUNT=${GOOGLE_SERVICE_ACCOUNT}\" > google_service_account.json
+"""
+
+[deploy]
+region = "us-west2"
+runtime = "V2"
+numReplicas = 1
+sleepApplication = false
+multiRegionConfig = {"us-west2":{"numReplicas":1}}
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
