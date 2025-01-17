@@ -1,6 +1,6 @@
 {
   "name": "medpet-chatbot-service",
-  "version": "4.0.0",
+  "version": "4.1.0",
   "description": "This is a service to integrate whatsapp service ✆ to automate chatbot 💬🤖 messages. This service is MedPet for vet for your pets 🐕🐈🦜🩺🏥",
   "main": "src/app.js",
   "scripts": {
