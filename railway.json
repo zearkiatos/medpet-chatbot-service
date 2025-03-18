@@ -1,0 +1,15 @@
+{
+  "build": {
+    "preBuildCommand": "npm install && mkdir src/credentials && touch src/credentials/google_service_account.json && echo \"GOOGLE_SERVICE_ACCOUNT=${GOOGLE_SERVICE_ACCOUNT}\" > google_service_account.json",
+    "dockerfilePath": "Dockerfile",
+    "context": "."
+  },
+  "deploy": {
+    "restartPolicyType": "ALWAYS"
+  },
+  "services": {
+    "web": {
+      "ports": [80]
+    }
+  }
+}
