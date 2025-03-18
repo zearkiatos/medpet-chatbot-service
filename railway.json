@@ -1,7 +1,7 @@
 {
   "build": {
-    "preBuildCommand": "npm install && mkdir -p src/credentials && touch src/credentials/google_service_account.json && echo \"$GOOGLE_SERVICE_ACCOUNT\" > src/credentials/google_service_account.json",
-    "dockerfilePath": "Dockerfile",
+    "preBuildCommand": "npm install",
+    "dockerfilePath": "railway.Dockerfile",
     "context": "."
   },
   "deploy": {
